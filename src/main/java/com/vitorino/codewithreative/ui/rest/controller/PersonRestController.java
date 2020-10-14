@@ -5,7 +5,7 @@ import com.vitorino.codewithreative.application.command.person.FindAllCommand;
 import com.vitorino.codewithreative.application.command.person.FindByIdCommand;
 import com.vitorino.codewithreative.application.command.person.SaveCommand;
 import com.vitorino.codewithreative.domain.model.Person;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +18,10 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/person")
 @Validated
+@RequiredArgsConstructor
 public class PersonRestController {
 
-    @Autowired
-    private PersonCommandHandler commandHandler;
+    private final PersonCommandHandler commandHandler;
 
     @GetMapping
     public Flux<Person> findAll(FindAllCommand command) {
@@ -35,7 +35,7 @@ public class PersonRestController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<Person> save(@Valid @RequestBody SaveCommand command){
+    public Mono<Person> save(@Valid @RequestBody SaveCommand command) {
         return commandHandler.execute(command);
     }
 
