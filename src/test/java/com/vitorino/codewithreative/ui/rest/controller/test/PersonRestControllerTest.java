@@ -69,6 +69,22 @@ public class PersonRestControllerTest {
     }
 
     @Test
+    public void testIfFindByIdReturnsBadRequestWhenIdWrong() {
+
+        var person = Person.builder().id(UUID.randomUUID()).name("John Doe").build();
+        repository.save(person).block();
+
+        webTestClient
+                .get()
+                .uri("/person/" + person.getId().toString() + "dfsadfasd")
+                .exchange()
+                .expectStatus()
+                .isBadRequest();
+        repository.delete(person).block();
+
+    }
+
+    @Test
     public void testIfSaveIsOk() throws JsonProcessingException {
         var body = BodyInserters.fromValue(mapper.writeValueAsString(SaveCommand.builder().name("John Doe").build()));
         var person = webTestClient
@@ -84,6 +100,19 @@ public class PersonRestControllerTest {
                 .blockFirst();
 
         repository.delete(person).block();
+    }
+
+    @Test
+    public void testIfSaveReturnsBadRequestWhenNameIsEmpty() throws JsonProcessingException {
+        var body = BodyInserters.fromValue(mapper.writeValueAsString(SaveCommand.builder().build()));
+        webTestClient
+                .post()
+                .uri("/person/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(body)
+                .exchange()
+                .expectStatus()
+                .isBadRequest();
     }
 
 }
